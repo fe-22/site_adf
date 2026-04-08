@@ -1,0 +1,113 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Início - AD Fidelidade Sede{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="hero-logo">
+            <img src="{% static 'img/logo.png' %}" alt="Logo AD Fidelidade" class="logo-img logo-img--hero">
+        </div>
+        <p class="hero-tag">Igreja Missionária</p>
+        <h1>AD Fidelidade Sede</h1>
+        <p class="hero-tema">2026 &mdash; Tempo de Suportar</p>
+        <p class="hero-sub">Uma família unida pela fé, comprometida com o Reino de Deus.</p>
+        <div class="hero-horarios">
+            <span><i class="fa-regular fa-clock"></i> Seg e Qui &mdash; 19h45</span>
+            <span><i class="fa-regular fa-clock"></i> Dom &mdash; 08h55 e 17h55</span>
+        </div>
+        <div class="hero-btns">
+            <a href="{% url 'core:agenda' %}" class="btn btn-primary">Ver Agenda</a>
+            <a href="{% url 'core:galeria' %}" class="btn btn-outline">Ver Galeria</a>
+        </div>
+    </div>
+</section>
+
+<!-- PRÓXIMOS EVENTOS -->
+{% if eventos_proximos %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Próximos Eventos</h2>
+            <p>Venha fazer parte de cada momento especial</p>
+        </div>
+        <div class="cards-grid">
+            {% for evento in eventos_proximos %}
+            <div class="card evento-card">
+                <div class="evento-tipo evento-tipo--{{ evento.tipo }}">
+                    {{ evento.get_tipo_display }}
+                </div>
+                <div class="card-body">
+                    <h3>{{ evento.titulo }}</h3>
+                    <p class="evento-data"><i class="fa-regular fa-calendar"></i> {{ evento.data|date:"d/m/Y" }}</p>
+                    <p class="evento-hora"><i class="fa-regular fa-clock"></i> {{ evento.hora|time:"H:i" }}</p>
+                    <p class="evento-local"><i class="fa-solid fa-location-dot"></i> {{ evento.local }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="section-footer">
+            <a href="{% url 'core:agenda' %}" class="btn btn-primary">Ver Agenda Completa</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- GALERIA DESTAQUE -->
+{% if fotos_destaque %}
+<section class="section section--gray">
+    <div class="container">
+        <div class="section-header">
+            <h2>Momentos em Destaque</h2>
+            <p>Registros dos nossos encontros com Deus</p>
+        </div>
+        <div class="galeria-grid">
+            {% for foto in fotos_destaque %}
+            <div class="galeria-item">
+                <img src="{{ foto.imagem.url }}" alt="{{ foto.titulo }}" loading="lazy">
+                <div class="galeria-overlay">
+                    <p>{{ foto.titulo }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="section-footer">
+            <a href="{% url 'core:galeria' %}" class="btn btn-primary">Ver Todas as Fotos</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CHAMADAS RÁPIDAS -->
+<section class="section">
+    <div class="container">
+        <div class="quick-links-grid">
+            <a href="{% url 'core:loja' %}" class="quick-card">
+                <i class="fa-solid fa-store"></i>
+                <h3>Loja da Igreja</h3>
+                <p>Livros, CDs, vestuário e muito mais</p>
+            </a>
+            <a href="{% url 'core:agenda' %}" class="quick-card">
+                <i class="fa-solid fa-calendar-days"></i>
+                <h3>Agenda</h3>
+                <p>Confira todos os cultos e eventos</p>
+            </a>
+            <a href="{% url 'core:galeria' %}" class="quick-card">
+                <i class="fa-solid fa-images"></i>
+                <h3>Galeria</h3>
+                <p>Fotos dos cultos e momentos especiais</p>
+            </a>
+            <a href="{% url 'core:parceiros' %}" class="quick-card">
+                <i class="fa-solid fa-handshake"></i>
+                <h3>Parceiros</h3>
+                <p>Empresas que abençoam a nossa igreja</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

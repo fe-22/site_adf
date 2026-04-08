@@ -1,0 +1,84 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}QR Code — {{ reuniao.titulo }}{% endblock %}
+{% block page_title %}QR Code de Presença{% endblock %}
+
+{% block painel_content %}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
+
+  <!-- QR Code -->
+  <div class="p-card">
+    <div class="p-card-header">
+      <h2><i class="fa-solid fa-qrcode" style="color:var(--p-brown);margin-right:0.5rem;"></i>QR Code</h2>
+      <button onclick="window.print()" class="p-btn p-btn-secondary no-print">
+        <i class="fa-solid fa-print"></i> Imprimir
+      </button>
+    </div>
+    <div class="qr-box">
+      <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code de Presença">
+      <p style="font-size:0.9rem;font-weight:700;color:var(--p-black);">{{ reuniao.titulo }}</p>
+      <p style="font-size:0.82rem;color:var(--p-text-soft);">{{ reuniao.data|date:"d/m/Y" }} às {{ reuniao.hora|time:"H:i" }}</p>
+      <div class="qr-url">{{ url }}</div>
+      <p style="font-size:0.78rem;color:var(--p-text-soft);margin-top:0.5rem;">
+        Aponte a câmera do celular para registrar presença
+      </p>
+    </div>
+  </div>
+
+  <!-- Info da reunião -->
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+    <div class="p-card">
+      <div class="p-card-header">
+        <h2><i class="fa-solid fa-circle-info" style="color:var(--p-brown);margin-right:0.5rem;"></i>Detalhes</h2>
+      </div>
+      <div class="p-card-body">
+        <table style="width:100%;font-size:0.9rem;border-collapse:collapse;">
+          <tr>
+            <td style="padding:0.5rem 0;color:var(--p-text-soft);width:40%;font-weight:700;">Título</td>
+            <td style="padding:0.5rem 0;">{{ reuniao.titulo }}</td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem 0;color:var(--p-text-soft);font-weight:700;">Data</td>
+            <td style="padding:0.5rem 0;">{{ reuniao.data|date:"d/m/Y" }}</td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem 0;color:var(--p-text-soft);font-weight:700;">Hora</td>
+            <td style="padding:0.5rem 0;">{{ reuniao.hora|time:"H:i" }}</td>
+          </tr>
+          <tr>
+            <td style="padding:0.5rem 0;color:var(--p-text-soft);font-weight:700;">Local</td>
+            <td style="padding:0.5rem 0;">{{ reuniao.local }}</td>
+          </tr>
+          {% if reuniao.descricao %}
+          <tr>
+            <td style="padding:0.5rem 0;color:var(--p-text-soft);font-weight:700;vertical-align:top;">Descrição</td>
+            <td style="padding:0.5rem 0;">{{ reuniao.descricao }}</td>
+          </tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+
+    <div class="p-card">
+      <div class="p-card-header">
+        <h2><i class="fa-solid fa-users" style="color:var(--p-brown);margin-right:0.5rem;"></i>Presenças</h2>
+      </div>
+      <div class="p-card-body" style="text-align:center;">
+        <div style="font-family:'Montserrat',sans-serif;font-size:3rem;font-weight:900;color:var(--p-brown);">
+          {{ total_presencas }}
+        </div>
+        <p style="color:var(--p-text-soft);font-size:0.88rem;">pessoa{{ total_presencas|pluralize }} registrada{{ total_presencas|pluralize }}</p>
+        <a href="{% url 'gestao:reuniao_presencas' reuniao.pk %}" class="p-btn p-btn-info" style="margin-top:1rem;">
+          <i class="fa-solid fa-list"></i> Ver Lista Completa
+        </a>
+      </div>
+    </div>
+
+    <div class="no-print">
+      <a href="{% url 'gestao:reuniao_lista' %}" class="p-btn p-btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Voltar às Reuniões
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

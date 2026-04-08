@@ -1,0 +1,72 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}{{ titulo_lista }}{% endblock %}
+{% block page_title %}{{ titulo_lista }}{% endblock %}
+
+{% block painel_content %}
+<div class="p-card">
+  <div class="p-card-header">
+    <h2>
+      <i class="fa-solid fa-{% if tipo == 'obreiros' %}people-group{% else %}calendar-check{% endif %}" style="color:var(--p-brown);margin-right:0.5rem;"></i>
+      {{ titulo_lista }}
+    </h2>
+    <a href="{{ criar_url }}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-plus"></i> Nova Reunião
+    </a>
+  </div>
+
+  {% if reunioes %}
+  <div class="p-table-wrap">
+    <table class="p-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Data</th>
+          <th>Hora</th>
+          <th>Local</th>
+          <th>Presenças</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reunioes %}
+        <tr>
+          <td><strong>{{ r.titulo }}</strong></td>
+          <td>{{ r.data|date:"d/m/Y" }}</td>
+          <td>{{ r.hora|time:"H:i" }}</td>
+          <td>{{ r.local }}</td>
+          <td>
+            <a href="{% url 'gestao:reuniao_presencas' r.pk %}" style="color:var(--p-brown);font-weight:700;">
+              {{ r.presencas.count }} pessoa{{ r.presencas.count|pluralize }}
+            </a>
+          </td>
+          <td class="actions">
+            <a href="{% url 'gestao:reuniao_qrcode' r.pk %}" class="p-btn p-btn-info p-btn-sm" title="QR Code">
+              <i class="fa-solid fa-qrcode"></i> QR Code
+            </a>
+            <a href="{% url 'gestao:reuniao_editar' r.pk %}" class="p-btn p-btn-secondary p-btn-sm" title="Editar">
+              <i class="fa-solid fa-pen"></i>
+            </a>
+            <form method="post" action="{% url 'gestao:reuniao_deletar' r.pk %}" style="display:inline;" onsubmit="return confirm('Remover esta reunião e todas as presenças?')">
+              {% csrf_token %}
+              <button type="submit" class="p-btn p-btn-danger p-btn-sm" title="Remover">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="p-empty">
+    <i class="fa-solid fa-calendar-xmark"></i>
+    <p>Nenhuma reunião cadastrada.</p>
+    <a href="{{ criar_url }}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-plus"></i> Agendar Primeira Reunião
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+

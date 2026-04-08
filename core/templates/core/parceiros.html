@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Parceiros - ADFidelidade Central{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fa-solid fa-handshake"></i> Empresas Parceiras</h1>
+        <p>Empresas que abençoam e apoiam o Ministério de Missões</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="parceiros-intro">
+            <p>Conheça as empresas que abençoam e apoiam o <strong>Ministério de Missões</strong> da AD Fidelidade Sede. Ao contratar um parceiro, você fortalece a família e o Reino de Deus.</p>
+        </div>
+
+        {% if empresas %}
+        <div class="parceiros-grid">
+            {% for empresa in empresas %}
+            <div class="parceiro-card">
+                <div class="parceiro-logo">
+                    {% if empresa.logo %}
+                        <img src="{{ empresa.logo.url }}" alt="{{ empresa.nome }}">
+                    {% else %}
+                        <div class="parceiro-logo-placeholder">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="parceiro-info">
+                    <h3>{{ empresa.nome }}</h3>
+                    {% if empresa.descricao %}
+                    <p>{{ empresa.descricao }}</p>
+                    {% endif %}
+                    <div class="parceiro-contatos">
+                        {% if empresa.telefone %}
+                        <a href="tel:{{ empresa.telefone }}" class="parceiro-contato">
+                            <i class="fa-solid fa-phone"></i> {{ empresa.telefone }}
+                        </a>
+                        {% endif %}
+                        {% if empresa.instagram %}
+                        <a href="https://instagram.com/{{ empresa.instagram|cut:'@' }}" target="_blank" class="parceiro-contato">
+                            <i class="fa-brands fa-instagram"></i> @{{ empresa.instagram|cut:'@' }}
+                        </a>
+                        {% endif %}
+                        {% if empresa.site %}
+                        <a href="{{ empresa.site }}" target="_blank" rel="noopener noreferrer" class="parceiro-contato">
+                            <i class="fa-solid fa-globe"></i> Visitar Site
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-handshake-slash"></i>
+            <p>Nenhuma empresa parceira cadastrada ainda.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}Loja{% endblock %}
+{% block page_title %}Loja — Produtos{% endblock %}
+
+{% block painel_content %}
+<div class="p-card">
+  <div class="p-card-header">
+    <h2><i class="fa-solid fa-bag-shopping" style="color:var(--p-brown);margin-right:0.5rem;"></i>Produtos da Loja</h2>
+    <a href="{% url 'gestao:produto_criar' %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-plus"></i> Novo Produto
+    </a>
+  </div>
+
+  {% if produtos %}
+  <div class="p-table-wrap">
+    <table class="p-table">
+      <thead>
+        <tr>
+          <th>Imagem</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Preço</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in produtos %}
+        <tr>
+          <td>
+            {% if p.imagem %}
+            <img src="{{ p.imagem.url }}" alt="{{ p.nome }}" class="thumb">
+            {% else %}
+            <div class="thumb" style="background:var(--p-bg);display:flex;align-items:center;justify-content:center;">
+              <i class="fa-solid fa-bag-shopping" style="color:var(--p-text-soft);"></i>
+            </div>
+            {% endif %}
+          </td>
+          <td><strong>{{ p.nome }}</strong></td>
+          <td><span class="badge badge-gray">{{ p.get_categoria_display }}</span></td>
+          <td style="font-weight:700;color:var(--p-brown);">R$ {{ p.preco }}</td>
+          <td>
+            {% if p.disponivel %}
+            <span class="badge badge-green"><i class="fa-solid fa-check"></i> Disponível</span>
+            {% else %}
+            <span class="badge badge-red">Indisponível</span>
+            {% endif %}
+          </td>
+          <td class="actions">
+            <a href="{% url 'gestao:produto_editar' p.pk %}" class="p-btn p-btn-secondary p-btn-sm">
+              <i class="fa-solid fa-pen"></i>
+            </a>
+            <form method="post" action="{% url 'gestao:produto_deletar' p.pk %}" style="display:inline;" onsubmit="return confirm('Remover este produto?')">
+              {% csrf_token %}
+              <button type="submit" class="p-btn p-btn-danger p-btn-sm">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="p-empty">
+    <i class="fa-solid fa-bag-shopping"></i>
+    <p>Nenhum produto cadastrado.</p>
+    <a href="{% url 'gestao:produto_criar' %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-plus"></i> Adicionar Produto
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

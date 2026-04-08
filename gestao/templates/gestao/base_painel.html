@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Painel{% endblock %} — AD Fidelidade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/painel.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="painel-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="{% static 'img/logo.png' %}" alt="Logo">
+      <div class="sidebar-logo-text">
+        <h2>AD Fidelidade</h2>
+        <span>Painel de Gestão</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Principal</div>
+      <nav class="sidebar-nav">
+        <a href="{% url 'gestao:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+          <i class="fa-solid fa-gauge"></i> Dashboard
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Ministério</div>
+      <nav class="sidebar-nav">
+        <a href="{% url 'gestao:reuniao_lista' %}" class="{% if request.resolver_match.url_name == 'reuniao_lista' or request.resolver_match.url_name == 'reuniao_criar' %}active{% endif %}">
+          <i class="fa-solid fa-calendar-check"></i> Reuniões Gerais
+        </a>
+        <a href="{% url 'gestao:reuniao_obreiros_lista' %}" class="{% if request.resolver_match.url_name == 'reuniao_obreiros_lista' %}active{% endif %}">
+          <i class="fa-solid fa-people-group"></i> Reuniões Obreiros
+        </a>
+        <a href="{% url 'gestao:evento_lista' %}" class="{% if 'evento' in request.resolver_match.url_name %}active{% endif %}">
+          <i class="fa-solid fa-calendar-days"></i> Agenda
+        </a>
+        <a href="{% url 'gestao:membro_lista' %}" class="{% if 'membro' in request.resolver_match.url_name %}active{% endif %}">
+          <i class="fa-solid fa-user-plus"></i> Novos Membros
+        </a>
+        <a href="{% url 'gestao:vigilia_lista' %}" class="{% if 'vigilia' in request.resolver_match.url_name %}active{% endif %}">
+          <i class="fa-solid fa-hands-praying"></i> Vigília / Oração
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Conteúdo</div>
+      <nav class="sidebar-nav">
+        <a href="{% url 'gestao:foto_lista' %}" class="{% if 'foto' in request.resolver_match.url_name %}active{% endif %}">
+          <i class="fa-solid fa-images"></i> Galeria
+        </a>
+        <a href="{% url 'gestao:produto_lista' %}" class="{% if 'produto' in request.resolver_match.url_name %}active{% endif %}">
+          <i class="fa-solid fa-bag-shopping"></i> Loja
+        </a>
+        <a href="{% url 'gestao:parceiro_lista' %}" class="{% if 'parceiro' in request.resolver_match.url_name %}active{% endif %}">
+          <i class="fa-solid fa-handshake"></i> Parceiros
+        </a>
+      </nav>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="/" target="_blank"><i class="fa-solid fa-globe"></i> Ver site público</a>
+      <a href="{% url 'gestao:logout' %}" style="margin-top:0.6rem;color:#f87171;">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="painel-main">
+    <header class="painel-header">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="p-btn p-btn-secondary p-btn-sm" id="sidebarToggle" style="display:none;">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <h1>{% block page_title %}Painel{% endblock %}</h1>
+      </div>
+      <div class="painel-header-right">
+        <i class="fa-solid fa-user-shield" style="color:var(--p-brown);"></i>
+        {{ request.user.username }}
+      </div>
+    </header>
+
+    <div class="painel-content">
+      {% if messages %}
+      <div class="p-alerts">
+        {% for message in messages %}
+        <div class="p-alert p-alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}warning{% endif %}">
+          <i class="fa-solid fa-{% if message.tags == 'error' %}circle-exclamation{% elif message.tags == 'success' %}circle-check{% else %}triangle-exclamation{% endif %}"></i>
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% block painel_content %}{% endblock %}
+    </div>
+  </main>
+
+</div>
+
+<script>
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('sidebar');
+  if (window.innerWidth <= 900) { toggleBtn.style.display = 'inline-flex'; }
+  toggleBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
+</script>
+</body>
+</html>

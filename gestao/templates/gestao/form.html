@@ -1,0 +1,50 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block painel_content %}
+<div class="p-card" style="max-width:680px;">
+  <div class="p-card-header">
+    <div>
+      <h2>{{ titulo }}</h2>
+      {% if objeto %}<p style="font-size:0.82rem;color:var(--p-text-soft);margin-top:0.2rem;">Editando: <em>{{ objeto }}</em></p>{% endif %}
+    </div>
+  </div>
+  <div class="p-card-body">
+    <form method="post" enctype="multipart/form-data" class="p-form">
+      {% csrf_token %}
+
+      {% for field in form %}
+      <div class="form-group{% if field.errors %} has-error{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}
+          <label class="checkbox-label">
+            {{ field }}
+            <span>{{ field.label }}</span>
+          </label>
+        {% else %}
+          <label for="{{ field.id_for_label }}">
+            {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}
+          </label>
+          {{ field }}
+        {% endif %}
+        {% if field.help_text %}
+          <small class="help-text">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit" class="p-btn p-btn-primary">
+          <i class="fa-solid fa-floppy-disk"></i> Salvar
+        </button>
+        <a href="{{ back_url }}" class="p-btn p-btn-secondary">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

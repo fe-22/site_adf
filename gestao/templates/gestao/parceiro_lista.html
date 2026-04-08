@@ -1,0 +1,97 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}Parceiros{% endblock %}
+{% block page_title %}Empresas Parceiras{% endblock %}
+
+{% block painel_content %}
+<div class="p-card">
+  <div class="p-card-header">
+    <div>
+      <h2><i class="fa-solid fa-handshake" style="color:var(--p-brown);margin-right:0.5rem;"></i>Parceiros do Ministério de Missões</h2>
+      <p style="font-size:0.8rem;color:var(--p-text-soft);margin-top:0.2rem;">Empresas que apoiam o Ministério de Missões da AD Fidelidade</p>
+    </div>
+    <a href="{% url 'gestao:parceiro_criar' %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-plus"></i> Nova Empresa
+    </a>
+  </div>
+
+  {% if parceiros %}
+  <div class="p-table-wrap">
+    <table class="p-table">
+      <thead>
+        <tr>
+          <th>Logo</th>
+          <th>Empresa</th>
+          <th>Telefone</th>
+          <th>Instagram</th>
+          <th>Site</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for emp in parceiros %}
+        <tr>
+          <td>
+            {% if emp.logo %}
+            <img src="{{ emp.logo.url }}" alt="{{ emp.nome }}" class="thumb">
+            {% else %}
+            <div class="thumb" style="background:var(--p-bg);display:flex;align-items:center;justify-content:center;">
+              <i class="fa-solid fa-building" style="color:var(--p-text-soft);"></i>
+            </div>
+            {% endif %}
+          </td>
+          <td>
+            <strong>{{ emp.nome }}</strong>
+            {% if emp.descricao %}
+            <p style="font-size:0.78rem;color:var(--p-text-soft);margin-top:0.2rem;">{{ emp.descricao|truncatechars:60 }}</p>
+            {% endif %}
+          </td>
+          <td>{{ emp.telefone|default:"—" }}</td>
+          <td>
+            {% if emp.instagram %}
+            <a href="https://instagram.com/{{ emp.instagram|cut:'@' }}" target="_blank" style="color:var(--p-brown);">
+              @{{ emp.instagram|cut:'@' }}
+            </a>
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            {% if emp.site %}
+            <a href="{{ emp.site }}" target="_blank" style="color:var(--p-brown);font-size:0.82rem;">
+              <i class="fa-solid fa-link"></i> Acessar
+            </a>
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            {% if emp.ativo %}
+            <span class="badge badge-green">Ativo</span>
+            {% else %}
+            <span class="badge badge-red">Inativo</span>
+            {% endif %}
+          </td>
+          <td class="actions">
+            <a href="{% url 'gestao:parceiro_editar' emp.pk %}" class="p-btn p-btn-secondary p-btn-sm">
+              <i class="fa-solid fa-pen"></i>
+            </a>
+            <form method="post" action="{% url 'gestao:parceiro_deletar' emp.pk %}" style="display:inline;" onsubmit="return confirm('Remover esta empresa parceira?')">
+              {% csrf_token %}
+              <button type="submit" class="p-btn p-btn-danger p-btn-sm">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="p-empty">
+    <i class="fa-solid fa-handshake-simple-slash"></i>
+    <p>Nenhuma empresa parceira cadastrada.</p>
+    <a href="{% url 'gestao:parceiro_criar' %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-plus"></i> Adicionar Empresa
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

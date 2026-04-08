@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Reuniões — AD Fidelidade Sede{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fa-solid fa-people-group"></i> Reuniões</h1>
+        <p>Próximas reuniões gerais e de obreiros</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        <!-- PRÓXIMAS REUNIÕES -->
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:800;color:var(--primary);margin-bottom:1.2rem;padding-bottom:0.5rem;border-bottom:3px solid var(--accent);">
+            <i class="fa-solid fa-calendar-check" style="color:var(--accent);"></i> Próximas Reuniões
+        </h2>
+
+        {% if proximas %}
+        <div class="agenda-lista" style="margin-bottom:3rem;">
+            {% for r in proximas %}
+            <div class="agenda-item" style="border-left-color:{% if r.tipo == 'obreiros' %}#6d8b3a{% else %}var(--accent){% endif %};">
+                <div class="agenda-data">
+                    <span class="agenda-dia">{{ r.data|date:"d" }}</span>
+                    <span class="agenda-mes">{{ r.data|date:"M" }}</span>
+                    <span class="agenda-ano">{{ r.data|date:"Y" }}</span>
+                </div>
+                <div class="agenda-info">
+                    <span class="evento-badge" style="background:{% if r.tipo == 'obreiros' %}#6d8b3a{% else %}var(--accent){% endif %};">
+                        {{ r.get_tipo_display }}
+                    </span>
+                    <h3>{{ r.titulo }}</h3>
+                    {% if r.descricao %}
+                    <p>{{ r.descricao }}</p>
+                    {% endif %}
+                    <div class="agenda-meta">
+                        <span><i class="fa-regular fa-clock"></i> {{ r.hora|time:"H:i" }}</span>
+                        <span><i class="fa-solid fa-location-dot"></i> {{ r.local }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="margin-bottom:3rem;">
+            <i class="fa-solid fa-calendar-xmark"></i>
+            <p>Nenhuma reunião programada no momento.</p>
+        </div>
+        {% endif %}
+
+        <!-- REUNIÕES ANTERIORES -->
+        {% if anteriores %}
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:800;color:#888;margin-bottom:1.2rem;padding-bottom:0.5rem;border-bottom:2px solid #e8e0d8;">
+            <i class="fa-solid fa-rotate-left"></i> Reuniões Anteriores
+        </h2>
+        <div class="agenda-lista">
+            {% for r in anteriores %}
+            <div class="agenda-item" style="opacity:0.65;border-left-color:#bbb;">
+                <div class="agenda-data">
+                    <span class="agenda-dia">{{ r.data|date:"d" }}</span>
+                    <span class="agenda-mes">{{ r.data|date:"M" }}</span>
+                    <span class="agenda-ano">{{ r.data|date:"Y" }}</span>
+                </div>
+                <div class="agenda-info">
+                    <span class="evento-badge" style="background:#999;">{{ r.get_tipo_display }}</span>
+                    <h3>{{ r.titulo }}</h3>
+                    <div class="agenda-meta">
+                        <span><i class="fa-regular fa-clock"></i> {{ r.hora|time:"H:i" }}</span>
+                        <span><i class="fa-solid fa-location-dot"></i> {{ r.local }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quero ser Membro — AD Fidelidade Sede</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/painel.css' %}">
+  <style>
+    .membro-page {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #0a0a0a 0%, #1a0a00 60%, #111111 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .membro-header {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 2rem;
+    }
+    .membro-header img { width: 70px; border-radius: 50%; margin: 0 auto 1rem; }
+    .membro-header h1 { font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 900; }
+    .membro-header p { font-size: 0.9rem; color: #c47a3a; font-weight: 600; margin-top: 0.3rem; }
+    .membro-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2.2rem;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+    .membro-box h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #111;
+      margin-bottom: 0.3rem;
+    }
+    .membro-box .subtitle {
+      font-size: 0.85rem;
+      color: #6b5c52;
+      margin-bottom: 1.8rem;
+      border-bottom: 1px solid #e8e0d8;
+      padding-bottom: 1rem;
+    }
+    .membro-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    .membro-footer a { font-size: 0.82rem; color: rgba(255,255,255,0.5); }
+    .membro-footer a:hover { color: #fff; }
+  </style>
+</head>
+<body>
+<div class="membro-page">
+
+  <div class="membro-header">
+    <img src="{% static 'img/logo.png' %}" alt="AD Fidelidade">
+    <h1>AD Fidelidade Sede</h1>
+    <p>Igreja Missionária — Queremos te conhecer!</p>
+  </div>
+
+  <div class="membro-box">
+
+    {% if enviado %}
+    <!-- SUCESSO -->
+    <div style="text-align:center;padding:1.5rem 0;">
+      <i class="fa-solid fa-circle-check" style="font-size:4rem;color:#2e7d32;margin-bottom:1rem;display:block;"></i>
+      <h2 style="font-size:1.4rem;">Cadastro recebido!</h2>
+      <p style="color:#6b5c52;margin-top:0.6rem;line-height:1.6;">
+        Obrigado por se cadastrar! Nossa equipe entrará em contato em breve.<br>
+        Que Deus abençoe você e sua família!
+      </p>
+      <div style="margin-top:1.5rem;display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;">
+        <a href="/" class="p-btn p-btn-primary">
+          <i class="fa-solid fa-house"></i> Ir para o site
+        </a>
+        <a href="{% url 'gestao:novo_membro_form' %}" class="p-btn p-btn-secondary">
+          <i class="fa-solid fa-rotate-left"></i> Outro cadastro
+        </a>
+      </div>
+    </div>
+
+    {% else %}
+    <h2><i class="fa-solid fa-user-plus" style="color:#8B4513;margin-right:0.4rem;"></i>Quero ser Membro</h2>
+    <p class="subtitle">Preencha o formulário abaixo e nossa equipe entrará em contato com você.</p>
+
+    <form method="post" class="p-form">
+      {% csrf_token %}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1rem;">
+
+        {% for field in form %}
+        <div class="form-group{% if field.errors %} has-error{% endif %}"
+             style="{% if field.field.widget.input_type == 'textarea' or field.name == 'nome' or field.name == 'como_conheceu' or field.name == 'observacoes' or field.name == 'endereco' %}grid-column:1/-1;{% endif %}">
+          {% if field.field.widget.input_type == 'checkbox' %}
+            <label class="checkbox-label">{{ field }} <span>{{ field.label }}</span></label>
+          {% else %}
+            <label for="{{ field.id_for_label }}">
+              {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}
+            </label>
+            {{ field }}
+          {% endif %}
+          {% if field.help_text %}<small class="help-text">{{ field.help_text }}</small>{% endif %}
+          {% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+
+      </div>
+
+      <button type="submit" class="p-btn p-btn-primary" style="width:100%;justify-content:center;padding:0.85rem;font-size:1rem;margin-top:1rem;">
+        <i class="fa-solid fa-paper-plane"></i> Enviar Cadastro
+      </button>
+    </form>
+    {% endif %}
+
+  </div>
+
+  <div class="membro-footer">
+    <a href="/"><i class="fa-solid fa-arrow-left"></i> Voltar ao site</a>
+  </div>
+
+</div>
+</body>
+</html>

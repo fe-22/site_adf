@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ produto.nome }} - Loja ADFidelidade{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'core:loja' %}" class="breadcrumb-link"><i class="fa-solid fa-arrow-left"></i> Voltar à Loja</a>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="produto-detalhe-grid">
+            <div class="produto-detalhe-img">
+                {% if produto.imagem %}
+                    <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                {% else %}
+                    <div class="produto-sem-imagem grande"><i class="fa-solid fa-image"></i></div>
+                {% endif %}
+            </div>
+            <div class="produto-detalhe-info">
+                <span class="produto-categoria">{{ produto.get_categoria_display }}</span>
+                <h1>{{ produto.nome }}</h1>
+                <p class="produto-preco grande">R$ {{ produto.preco }}</p>
+                {% if produto.descricao %}
+                <p class="produto-desc-completa">{{ produto.descricao }}</p>
+                {% endif %}
+                <a href="https://wa.me/?text=Olá! Tenho interesse no produto: {{ produto.nome }}" 
+                   target="_blank" class="btn btn-whatsapp">
+                    <i class="fa-brands fa-whatsapp"></i> Solicitar via WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

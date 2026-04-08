@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Agenda - ADFidelidade Central{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fa-solid fa-calendar-days"></i> Agenda da Igreja</h1>
+        <p>Confira nossos cultos e eventos</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if eventos %}
+        <div class="agenda-lista">
+            {% for evento in eventos %}
+            <div class="agenda-item evento-tipo--{{ evento.tipo }}">
+                <div class="agenda-data">
+                    <span class="agenda-dia">{{ evento.data|date:"d" }}</span>
+                    <span class="agenda-mes">{{ evento.data|date:"M" }}</span>
+                    <span class="agenda-ano">{{ evento.data|date:"Y" }}</span>
+                </div>
+                <div class="agenda-info">
+                    <span class="evento-badge">{{ evento.get_tipo_display }}</span>
+                    <h3>{{ evento.titulo }}</h3>
+                    {% if evento.descricao %}
+                    <p>{{ evento.descricao }}</p>
+                    {% endif %}
+                    <div class="agenda-meta">
+                        <span><i class="fa-regular fa-clock"></i> {{ evento.hora|time:"H:i" }}</span>
+                        <span><i class="fa-solid fa-location-dot"></i> {{ evento.local }}</span>
+                        {% if evento.recorrente %}
+                        <span class="recorrente-badge"><i class="fa-solid fa-rotate"></i> Semanal</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-calendar-xmark"></i>
+            <p>Nenhum evento programado no momento.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

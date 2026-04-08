@@ -1,0 +1,153 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block painel_content %}
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+    <div class="stat-value">{{ total_reunioes }}</div>
+    <div class="stat-label">Reuniões Gerais</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-people-group"></i></div>
+    <div class="stat-value">{{ total_obreiros }}</div>
+    <div class="stat-label">Reuniões Obreiros</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div>
+    <div class="stat-value">{{ total_eventos }}</div>
+    <div class="stat-label">Eventos na Agenda</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-images"></i></div>
+    <div class="stat-value">{{ total_fotos }}</div>
+    <div class="stat-label">Fotos na Galeria</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+    <div class="stat-value">{{ total_produtos }}</div>
+    <div class="stat-label">Produtos na Loja</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-handshake"></i></div>
+    <div class="stat-value">{{ total_parceiros }}</div>
+    <div class="stat-label">Parceiros Ativos</div>
+  </div>
+  <div class="stat-card" style="border-left-color:{% if total_membros_pendentes > 0 %}#d97706{% else %}var(--p-brown){% endif %};">
+    <div class="stat-icon"><i class="fa-solid fa-user-plus" style="color:{% if total_membros_pendentes > 0 %}#d97706{% else %}var(--p-brown){% endif %};"></i></div>
+    <div class="stat-value">{{ total_membros_pendentes }}</div>
+    <div class="stat-label">Membros Pendentes</div>
+  </div>
+  <div class="stat-card" style="border-left-color:{% if vigilia_ativa %}#16a34a{% else %}var(--p-brown){% endif %};">
+    <div class="stat-icon"><i class="fa-solid fa-hands-praying" style="color:{% if vigilia_ativa %}#16a34a{% else %}var(--p-brown){% endif %};"></i></div>
+    <div class="stat-value">{% if vigilia_ativa %}Ativa{% else %}—{% endif %}</div>
+    <div class="stat-label">Vigília de Oração</div>
+  </div>
+</div>
+
+{% if vigilia_ativa %}
+<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:1rem 1.4rem;margin:1rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;">
+  <div>
+    <strong style="color:#15803d;"><i class="fa-solid fa-circle" style="font-size:0.6rem;animation:pulsar 1.2s infinite;"></i> Vigília Ativa:</strong>
+    {{ vigilia_ativa.titulo }} — {{ vigilia_ativa.slots_ocupados }}/{{ vigilia_ativa.total_slots }} horários assumidos
+  </div>
+  <a href="{% url 'gestao:vigilia_horarios' vigilia_ativa.pk %}" class="p-btn p-btn-primary p-btn-sm">
+    <i class="fa-solid fa-clock"></i> Ver Horários
+  </a>
+</div>
+{% endif %}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;flex-wrap:wrap;">
+
+  <!-- Reuniões recentes -->
+  <div class="p-card" style="grid-column:1/-1;">
+    <div class="p-card-header">
+      <h2><i class="fa-solid fa-calendar-check" style="color:var(--p-brown);margin-right:0.5rem;"></i>Reuniões Recentes</h2>
+      <a href="{% url 'gestao:reuniao_criar' %}" class="p-btn p-btn-primary p-btn-sm">
+        <i class="fa-solid fa-plus"></i> Nova Reunião
+      </a>
+    </div>
+    {% if reunioes_recentes %}
+    <div class="p-table-wrap">
+      <table class="p-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Local</th>
+            <th>Presenças</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reunioes_recentes %}
+          <tr>
+            <td><strong>{{ r.titulo }}</strong></td>
+            <td>{{ r.data|date:"d/m/Y" }}</td>
+            <td>{{ r.hora|time:"H:i" }}</td>
+            <td>{{ r.local }}</td>
+            <td><span class="badge badge-brown">{{ r.presencas.count }}</span></td>
+            <td class="actions">
+              <a href="{% url 'gestao:reuniao_qrcode' r.pk %}" class="p-btn p-btn-info p-btn-sm">
+                <i class="fa-solid fa-qrcode"></i> QR Code
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="p-empty">
+      <i class="fa-solid fa-calendar-xmark"></i>
+      <p>Nenhuma reunião cadastrada ainda.</p>
+      <a href="{% url 'gestao:reuniao_criar' %}" class="p-btn p-btn-primary">
+        <i class="fa-solid fa-plus"></i> Agendar Reunião
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Ações Rápidas -->
+<div style="margin-top:1.5rem;">
+  <h3 style="font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;color:var(--p-text-soft);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;">
+    Ações Rápidas
+  </h3>
+  <div class="quick-actions">
+    <a href="{% url 'gestao:reuniao_criar' %}?tipo=geral" class="quick-action">
+      <i class="fa-solid fa-calendar-plus"></i>
+      <span>Nova Reunião</span>
+    </a>
+    <a href="{% url 'gestao:reuniao_criar' %}?tipo=obreiros" class="quick-action">
+      <i class="fa-solid fa-people-group"></i>
+      <span>Reunião Obreiros</span>
+    </a>
+    <a href="{% url 'gestao:foto_upload' %}" class="quick-action">
+      <i class="fa-solid fa-upload"></i>
+      <span>Enviar Foto</span>
+    </a>
+    <a href="{% url 'gestao:produto_criar' %}" class="quick-action">
+      <i class="fa-solid fa-plus"></i>
+      <span>Novo Produto</span>
+    </a>
+    <a href="{% url 'gestao:evento_criar' %}" class="quick-action">
+      <i class="fa-solid fa-calendar-day"></i>
+      <span>Novo Evento</span>
+    </a>
+    <a href="{% url 'gestao:membro_lista' %}" class="quick-action">
+      <i class="fa-solid fa-user-plus"></i>
+      <span>Ver Membros</span>
+    </a>
+    <a href="{% url 'gestao:parceiro_criar' %}" class="quick-action">
+      <i class="fa-solid fa-building"></i>
+      <span>Novo Parceiro</span>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

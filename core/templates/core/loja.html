@@ -1,0 +1,63 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Loja - ADFidelidade Central{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fa-solid fa-store"></i> Loja da Igreja</h1>
+        <p>Adquira materiais que edificam a sua fé</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        <!-- FILTRO POR CATEGORIA -->
+        <div class="filtros">
+            <a href="{% url 'core:loja' %}" class="filtro-btn {% if not categoria_selecionada %}active{% endif %}">Todos</a>
+            {% for valor, label in categorias %}
+            <a href="?categoria={{ valor }}" class="filtro-btn {% if categoria_selecionada == valor %}active{% endif %}">{{ label }}</a>
+            {% endfor %}
+        </div>
+
+        <!-- PRODUTOS -->
+        {% if produtos %}
+        <div class="cards-grid">
+            {% for produto in produtos %}
+            <div class="card produto-card">
+                <div class="produto-img">
+                    {% if produto.imagem %}
+                        <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" loading="lazy">
+                    {% else %}
+                        <div class="produto-sem-imagem"><i class="fa-solid fa-image"></i></div>
+                    {% endif %}
+                    <span class="produto-categoria">{{ produto.get_categoria_display }}</span>
+                </div>
+                <div class="card-body">
+                    <h3>{{ produto.nome }}</h3>
+                    {% if produto.descricao %}
+                    <p class="produto-desc">{{ produto.descricao|truncatewords:15 }}</p>
+                    {% endif %}
+                    <div class="produto-footer">
+                        <span class="produto-preco">R$ {{ produto.preco }}</span>
+                        <a href="{% url 'core:produto_detalhe' produto.pk %}" class="btn btn-sm btn-primary">Ver Detalhes</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <p>Nenhum produto encontrado nesta categoria.</p>
+            <a href="{% url 'core:loja' %}" class="btn btn-primary">Ver Todos</a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

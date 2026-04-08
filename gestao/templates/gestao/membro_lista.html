@@ -1,0 +1,100 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}Novos Membros{% endblock %}
+{% block page_title %}Novos Membros{% endblock %}
+
+{% block painel_content %}
+
+<!-- Filtros + link público -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;margin-bottom:1.2rem;">
+  <div style="display:flex;gap:0.5rem;">
+    <a href="?status=pendente" class="p-btn {% if status != 'atendido' %}p-btn-primary{% else %}p-btn-secondary{% endif %}">
+      <i class="fa-solid fa-clock"></i> Pendentes
+      {% if total_pendentes > 0 %}<span style="background:#dc2626;color:white;border-radius:20px;padding:0 6px;font-size:0.7rem;margin-left:4px;">{{ total_pendentes }}</span>{% endif %}
+    </a>
+    <a href="?status=atendido" class="p-btn {% if status == 'atendido' %}p-btn-primary{% else %}p-btn-secondary{% endif %}">
+      <i class="fa-solid fa-circle-check"></i> Atendidos
+    </a>
+  </div>
+  <div style="display:flex;gap:0.5rem;align-items:center;">
+    <span style="font-size:0.8rem;color:var(--p-text-soft);">Link público:</span>
+    <code style="background:var(--p-bg);padding:0.3rem 0.6rem;border-radius:6px;font-size:0.78rem;border:1px solid var(--p-gray);">/painel/novo-membro/</code>
+    <a href="{% url 'gestao:novo_membro_form' %}" target="_blank" class="p-btn p-btn-info p-btn-sm">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir
+    </a>
+  </div>
+</div>
+
+<div class="p-card">
+  <div class="p-card-header">
+    <h2>
+      <i class="fa-solid fa-user-plus" style="color:var(--p-brown);margin-right:0.5rem;"></i>
+      {% if status == 'atendido' %}Membros Atendidos{% else %}Membros Pendentes de Atendimento{% endif %}
+    </h2>
+  </div>
+
+  {% if membros %}
+  <div class="p-table-wrap">
+    <table class="p-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>E-mail</th>
+          <th>Como Conheceu</th>
+          <th>Nascimento</th>
+          <th>Data do Cadastro</th>
+          <th>Observações</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in membros %}
+        <tr>
+          <td>
+            <strong>{{ m.nome }}</strong>
+            {% if m.endereco %}<br><small style="color:var(--p-text-soft);">{{ m.endereco }}</small>{% endif %}
+          </td>
+          <td>
+            <a href="https://wa.me/55{{ m.telefone|cut:' '|cut:'('|cut:')'|cut:'-' }}" target="_blank" style="color:var(--p-brown);">
+              {{ m.telefone }}
+            </a>
+          </td>
+          <td style="font-size:0.82rem;">{{ m.email|default:"—" }}</td>
+          <td><span class="badge badge-gray">{{ m.get_como_conheceu_display }}</span></td>
+          <td style="font-size:0.82rem;">{{ m.data_nascimento|date:"d/m/Y"|default:"—" }}</td>
+          <td style="font-size:0.8rem;color:var(--p-text-soft);">{{ m.criado_em|date:"d/m/Y H:i" }}</td>
+          <td style="font-size:0.82rem;max-width:180px;">{{ m.observacoes|truncatechars:60|default:"—" }}</td>
+          <td class="actions">
+            {% if not m.atendido %}
+            <form method="post" action="{% url 'gestao:membro_atender' m.pk %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="p-btn p-btn-success p-btn-sm" title="Marcar como atendido">
+                <i class="fa-solid fa-check"></i> Atendido
+              </button>
+            </form>
+            {% endif %}
+            <form method="post" action="{% url 'gestao:membro_deletar' m.pk %}" style="display:inline;" onsubmit="return confirm('Remover este registro?')">
+              {% csrf_token %}
+              <button type="submit" class="p-btn p-btn-danger p-btn-sm" title="Remover">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="p-empty">
+    <i class="fa-solid fa-user-clock"></i>
+    <p>
+      {% if status == 'atendido' %}Nenhum membro atendido ainda.{% else %}Nenhum cadastro pendente. 🎉{% endif %}
+    </p>
+    <a href="{% url 'gestao:novo_membro_form' %}" target="_blank" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver formulário público
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

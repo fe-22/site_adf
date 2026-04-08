@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Presença — {{ reuniao.titulo }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/painel.css' %}">
+</head>
+<body>
+<div class="presenca-page">
+  <div class="presenca-box">
+
+    <div style="margin-bottom:1.5rem;">
+      <img src="{% static 'img/logo.png' %}" alt="Logo" style="width:56px;border-radius:50%;margin:0 auto 0.8rem;">
+      <h2 style="font-family:'Montserrat',sans-serif;font-size:1.2rem;font-weight:900;color:var(--p-black);">AD Fidelidade Sede</h2>
+      <p style="font-size:0.75rem;color:var(--p-brown);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Registro de Presença</p>
+    </div>
+
+    <div class="reuniao-info">
+      <h3>{{ reuniao.titulo }}</h3>
+      <p><i class="fa-solid fa-calendar"></i> {{ reuniao.data|date:"d/m/Y" }} às {{ reuniao.hora|time:"H:i" }}</p>
+      <p><i class="fa-solid fa-location-dot"></i> {{ reuniao.local }}</p>
+    </div>
+
+    {% if confirmado %}
+    <div class="confirmado-box">
+      <i class="fa-solid fa-circle-check" style="color:var(--p-success);"></i>
+      <h3>Presença Registrada!</h3>
+      <p style="color:var(--p-text-soft);font-size:0.9rem;">Obrigado por confirmar sua presença.<br>Que Deus abençoe você!</p>
+    </div>
+    {% else %}
+
+    {% if messages %}
+    <div class="p-alerts">
+      {% for message in messages %}
+      <div class="p-alert p-alert-error">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" class="p-form" style="text-align:left;">
+      {% csrf_token %}
+
+      {% for field in form %}
+      <div class="form-group{% if field.errors %} has-error{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}
+          <label class="checkbox-label">{{ field }} <span>{{ field.label }}</span></label>
+        {% else %}
+          <label for="{{ field.id_for_label }}">
+            {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}
+          </label>
+          {{ field }}
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="field-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      <button type="submit" class="p-btn p-btn-primary" style="width:100%;justify-content:center;padding:0.75rem;font-size:0.95rem;">
+        <i class="fa-solid fa-check"></i> Confirmar Presença
+      </button>
+    </form>
+    {% endif %}
+
+  </div>
+</div>
+</body>
+</html>

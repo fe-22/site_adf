@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AD Fidelidade Sede{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="{% url 'core:home' %}" class="nav-logo">
+                <img src="{% static 'img/logo.png' %}" alt="Logo AD Fidelidade" class="logo-img">
+                <span class="logo-text">AD<strong>Fidelidade</strong><small>Sede</small></span>
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="{% url 'core:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Início</a></li>
+                <li><a href="{% url 'core:reunioes' %}" class="{% if request.resolver_match.url_name == 'reunioes' %}active{% endif %}">Reuniões</a></li>
+                <li><a href="{% url 'core:oracao' %}" class="{% if request.resolver_match.url_name == 'oracao' %}active{% endif %}">Oração</a></li>
+                <li><a href="{% url 'core:loja' %}" class="{% if 'loja' in request.resolver_match.url_name %}active{% endif %}">Loja</a></li>
+                <li><a href="{% url 'core:agenda' %}" class="{% if request.resolver_match.url_name == 'agenda' %}active{% endif %}">Agenda</a></li>
+                <li><a href="{% url 'core:galeria' %}" class="{% if request.resolver_match.url_name == 'galeria' %}active{% endif %}">Galeria</a></li>
+                <li><a href="{% url 'core:parceiros' %}" class="{% if request.resolver_match.url_name == 'parceiros' %}active{% endif %}">Parceiros</a></li>
+                <li><a href="{% url 'gestao:novo_membro_form' %}" style="font-weight:700;color:var(--accent);">Seja Membro</a></li>
+                <li><a href="https://www.instagram.com/adfidelidadeoficial/" target="_blank" class="nav-instagram"><i class="fa-brands fa-instagram"></i></a></li>
+                <li><a href="{% url 'gestao:dashboard' %}" class="nav-gestao" title="Área do Gestor"><i class="fa-solid fa-lock"></i></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="{% static 'img/logo.png' %}" alt="Logo AD Fidelidade" class="logo-img logo-img--grande">
+                    <div>
+                        <h3>AD Fidelidade Sede</h3>
+                        <p class="footer-missao">Igreja Missionária</p>
+                    </div>
+                </div>
+                <p class="footer-tema">&#x201C;2026 é o ano: Tempo de Suportar&#x201D;</p>
+            </div>
+            <div class="footer-col">
+                <h4>Links Rápidos</h4>
+                <ul>
+                    <li><a href="{% url 'core:home' %}">Início</a></li>
+                    <li><a href="{% url 'core:reunioes' %}">Reuniões</a></li>
+                    <li><a href="{% url 'core:loja' %}">Loja</a></li>
+                    <li><a href="{% url 'core:agenda' %}">Agenda</a></li>
+                    <li><a href="{% url 'core:galeria' %}">Galeria</a></li>
+                    <li><a href="{% url 'core:parceiros' %}">Parceiros</a></li>
+                    <li><a href="{% url 'gestao:novo_membro_form' %}">Seja Membro</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Horários dos Cultos</h4>
+                <p><i class="fa-regular fa-clock"></i> Seg e Qui &mdash; 19h45</p>
+                <p><i class="fa-regular fa-clock"></i> Dom &mdash; 08h55 e 17h55</p>
+                <h4 style="margin-top:1.2rem;">Redes Sociais</h4>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/adfidelidadeoficial/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@adfidelidadeoficial" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Fthec sistemas e automação &mdash; <e-mail>fthec@fthec.com.br</e-mail> Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

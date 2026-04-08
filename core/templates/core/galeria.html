@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Galeria - ADFidelidade Central{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fa-solid fa-images"></i> Galeria de Fotos</h1>
+        <p>Momentos dos nossos cultos e eventos</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if fotos %}
+        <div class="galeria-grid grande">
+            {% for foto in fotos %}
+            <div class="galeria-item" onclick="abrirLightbox('{{ foto.imagem.url }}', '{{ foto.titulo }}')">
+                <img src="{{ foto.imagem.url }}" alt="{{ foto.titulo }}" loading="lazy">
+                <div class="galeria-overlay">
+                    <p>{{ foto.titulo }}</p>
+                    <small>{{ foto.data_culto|date:"d/m/Y" }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-camera"></i>
+            <p>Nenhuma foto disponível no momento.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="lightbox" onclick="fecharLightbox()">
+    <button class="lightbox-fechar" onclick="fecharLightbox()"><i class="fa-solid fa-xmark"></i></button>
+    <img id="lightbox-img" src="" alt="">
+    <p id="lightbox-titulo"></p>
+</div>
+
+{% endblock %}

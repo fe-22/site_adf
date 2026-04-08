@@ -1,0 +1,64 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}Presenças — {{ reuniao.titulo }}{% endblock %}
+{% block page_title %}Lista de Presenças{% endblock %}
+
+{% block painel_content %}
+<div class="p-card">
+  <div class="p-card-header">
+    <div>
+      <h2>{{ reuniao.titulo }}</h2>
+      <p style="font-size:0.82rem;color:var(--p-text-soft);margin-top:0.2rem;">
+        <i class="fa-solid fa-calendar" style="color:var(--p-brown);"></i>
+        {{ reuniao.data|date:"d/m/Y" }} às {{ reuniao.hora|time:"H:i" }} — {{ reuniao.local }}
+      </p>
+    </div>
+    <div style="display:flex;gap:0.6rem;">
+      <a href="{% url 'gestao:reuniao_presencas_export' reuniao.pk %}" class="p-btn p-btn-success">
+        <i class="fa-solid fa-file-csv"></i> Exportar CSV
+      </a>
+      <a href="{% url 'gestao:reuniao_qrcode' reuniao.pk %}" class="p-btn p-btn-info">
+        <i class="fa-solid fa-qrcode"></i> QR Code
+      </a>
+      <a href="{% url 'gestao:reuniao_lista' %}" class="p-btn p-btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </a>
+    </div>
+  </div>
+
+  {% if presencas %}
+  <div style="padding:1rem 1.5rem;background:var(--p-bg);border-bottom:1px solid var(--p-gray);font-size:0.88rem;color:var(--p-text-soft);">
+    <strong style="color:var(--p-black);">{{ presencas.count }}</strong> pessoa{{ presencas.count|pluralize }} registrada{{ presencas.count|pluralize }}
+  </div>
+  <div class="p-table-wrap">
+    <table class="p-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>Registrado em</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in presencas %}
+        <tr>
+          <td style="color:var(--p-text-soft);font-size:0.8rem;">{{ forloop.counter }}</td>
+          <td><strong>{{ p.nome }}</strong></td>
+          <td>{{ p.telefone|default:"—" }}</td>
+          <td style="font-size:0.82rem;color:var(--p-text-soft);">{{ p.registrado_em|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="p-empty">
+    <i class="fa-solid fa-users-slash"></i>
+    <p>Nenhuma presença registrada ainda.</p>
+    <a href="{% url 'gestao:reuniao_qrcode' reuniao.pk %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-qrcode"></i> Gerar QR Code
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

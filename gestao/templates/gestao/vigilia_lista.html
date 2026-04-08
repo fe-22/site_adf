@@ -1,0 +1,77 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}Consagração de Oração{% endblock %}
+{% block page_title %}Vigílias e Consagrações{% endblock %}
+
+{% block painel_content %}
+<div class="p-card">
+  <div class="p-card-header">
+    <h2><i class="fa-solid fa-hands-praying" style="color:var(--p-brown);margin-right:0.5rem;"></i>Convocações de Oração</h2>
+    <a href="{% url 'gestao:vigilia_criar' %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-plus"></i> Nova Convocação
+    </a>
+  </div>
+
+  {% if vigilias %}
+  <div class="p-table-wrap">
+    <table class="p-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Início</th>
+          <th>Fim</th>
+          <th>Slots</th>
+          <th>Inscritos</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vigilias %}
+        <tr>
+          <td><strong>{{ v.titulo }}</strong></td>
+          <td>{{ v.data_inicio|date:"d/m/Y H:i" }}</td>
+          <td>{{ v.data_fim|date:"d/m/Y H:i" }}</td>
+          <td>{{ v.total_slots }}</td>
+          <td>
+            <span class="badge {% if v.slots_ocupados == v.total_slots %}badge-green{% elif v.slots_ocupados > 0 %}badge-brown{% else %}badge-gray{% endif %}">
+              {{ v.slots_ocupados }} / {{ v.total_slots }}
+            </span>
+          </td>
+          <td>
+            {% if v.ativa %}
+            <span class="badge badge-green"><i class="fa-solid fa-circle" style="font-size:0.6rem;"></i> Ativa</span>
+            {% else %}
+            <span class="badge badge-gray">Inativa</span>
+            {% endif %}
+          </td>
+          <td class="actions">
+            <a href="{% url 'gestao:vigilia_horarios' v.pk %}" class="p-btn p-btn-info p-btn-sm" title="Ver inscrições">
+              <i class="fa-solid fa-clock"></i> Horários
+            </a>
+            <a href="{% url 'gestao:vigilia_editar' v.pk %}" class="p-btn p-btn-secondary p-btn-sm" title="Editar">
+              <i class="fa-solid fa-pen"></i>
+            </a>
+            <form method="post" action="{% url 'gestao:vigilia_deletar' v.pk %}" style="display:inline;"
+                  onsubmit="return confirm('Remover esta convocação e todas as inscrições?')">
+              {% csrf_token %}
+              <button type="submit" class="p-btn p-btn-danger p-btn-sm" title="Excluir">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="p-empty">
+    <i class="fa-solid fa-hands-praying"></i>
+    <p>Nenhuma convocação de oração cadastrada.</p>
+    <a href="{% url 'gestao:vigilia_criar' %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-plus"></i> Convocar Vigília
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'gestao/base_painel.html' %}
+{% block title %}Galeria{% endblock %}
+{% block page_title %}Galeria de Fotos{% endblock %}
+
+{% block painel_content %}
+<div class="p-card">
+  <div class="p-card-header">
+    <h2><i class="fa-solid fa-images" style="color:var(--p-brown);margin-right:0.5rem;"></i>Fotos do Culto</h2>
+    <a href="{% url 'gestao:foto_upload' %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-upload"></i> Enviar Foto
+    </a>
+  </div>
+
+  {% if fotos %}
+  <div class="p-table-wrap">
+    <table class="p-table">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Título</th>
+          <th>Data do Culto</th>
+          <th>Destaque</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for foto in fotos %}
+        <tr>
+          <td>
+            {% if foto.imagem %}
+            <img src="{{ foto.imagem.url }}" alt="{{ foto.titulo }}" class="thumb">
+            {% else %}
+            <div class="thumb" style="background:var(--p-bg);display:flex;align-items:center;justify-content:center;">
+              <i class="fa-solid fa-image" style="color:var(--p-text-soft);"></i>
+            </div>
+            {% endif %}
+          </td>
+          <td><strong>{{ foto.titulo }}</strong></td>
+          <td>{{ foto.data_culto|date:"d/m/Y"|default:"—" }}</td>
+          <td>
+            {% if foto.destaque %}
+            <span class="badge badge-brown"><i class="fa-solid fa-star"></i> Destaque</span>
+            {% else %}
+            <span class="badge badge-gray">Normal</span>
+            {% endif %}
+          </td>
+          <td class="actions">
+            <a href="{% url 'gestao:foto_editar' foto.pk %}" class="p-btn p-btn-secondary p-btn-sm">
+              <i class="fa-solid fa-pen"></i>
+            </a>
+            <form method="post" action="{% url 'gestao:foto_deletar' foto.pk %}" style="display:inline;" onsubmit="return confirm('Remover esta foto?')">
+              {% csrf_token %}
+              <button type="submit" class="p-btn p-btn-danger p-btn-sm">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="p-empty">
+    <i class="fa-solid fa-image"></i>
+    <p>Nenhuma foto na galeria ainda.</p>
+    <a href="{% url 'gestao:foto_upload' %}" class="p-btn p-btn-primary">
+      <i class="fa-solid fa-upload"></i> Enviar Primeira Foto
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
