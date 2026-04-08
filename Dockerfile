@@ -1,5 +1,5 @@
 # ─── BUILD ────────────────────────────────────────────────────────────────────
-FROM python:3.11-slim AS builder
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 # ─── PRODUÇÃO ─────────────────────────────────────────────────────────────────
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar packages instalados do builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copiar código do projeto
@@ -39,9 +39,5 @@ RUN python manage.py collectstatic --noinput
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
-# Cloud Run injeta $PORT — gunicorn escuta nela
-CMD exec gunicorn adfidelidade.wsgi:application \
-    --bind 0.0.0.0:$PORT \
-    --workers 2 \
-    --threads 4 \
-    --timeout 120
+# Cloud Run injeta $PORT — roda migrate e depois gunicorn
+CMD ["sh", "start.sh"]
