@@ -18,11 +18,15 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS_ENV.split(',') if h.strip()] if ALLOWED_HOSTS_ENV else ['*']
 
-CSRF_TRUSTED_ORIGINS = [
+# CSRF: aceita domínios de ALLOWED_HOSTS (https) + variável explícita opcional
+_csrf_extra = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+_csrf_from_hosts = [
     f'https://{h.strip()}'
     for h in ALLOWED_HOSTS_ENV.split(',')
-    if h.strip() and not h.strip().startswith('localhost') and not h.strip().startswith('127.')
-] or ['http://localhost:8000']
+    if h.strip() and not h.strip() in ('localhost', '127.0.0.1', '*')
+]
+_csrf_from_env = [o.strip() for o in _csrf_extra.split(',') if o.strip()]
+CSRF_TRUSTED_ORIGINS = _csrf_from_hosts + _csrf_from_env or ['http://localhost:8000']
 
 
 # Application definition
