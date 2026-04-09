@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'core',
     'gestao',
 ]
@@ -136,18 +137,42 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # ─── ARQUIVOS DE MÍDIA (uploads) ──────────────────────────────────────────────
-# Em produção use Google Cloud Storage definindo GS_BUCKET_NAME
+# Em produção defina GS_BUCKET_NAME para usar o Google Cloud Storage.
+# As credenciais são lidas do arquivo apontado por GOOGLE_APPLICATION_CREDENTIALS
+# ou automaticamente quando rodando no Google Cloud Run / App Engine.
 GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', '')
 
 if GS_BUCKET_NAME:
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    # ── Google Cloud Storage ──────────────────────────────────────────────────
+    GS_DEFAULT_ACL = None          # bucket com "Acesso uniforme" (recomendado)
+    GS_QUERYSTRING_AUTH = False    # URLs públicas sem assinatura
+    GS_FILE_OVERWRITE = False      # evita sobrescrever arquivos com mesmo nome
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
+    STORAGES = {
+        'default': {
+            'BACKEND': 'storages.backends.gcloud.GoogleCloudStorage',
+            'OPTIONS': {
+                'bucket_name': GS_BUCKET_NAME,
+            },
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
 else:
+    # ── Armazenamento local (desenvolvimento) ─────────────────────────────────
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
