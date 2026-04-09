@@ -32,8 +32,8 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copiar código do projeto
 COPY . .
 
-# Coletar arquivos estáticos
-RUN python manage.py collectstatic --noinput
+# Coletar arquivos estáticos (força armazenamento local independente do GS_BUCKET_NAME)
+RUN GS_BUCKET_NAME="" python manage.py collectstatic --noinput
 
 # Usuário não-root por segurança
 RUN useradd -m appuser && chown -R appuser /app

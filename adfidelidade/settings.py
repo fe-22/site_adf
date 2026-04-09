@@ -12,9 +12,10 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    'CSRF_TRUSTED_ORIGINS', ''
-).split(',')
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if o.strip()
+] or ['http://localhost:8000']
 
 # ─── APPS ──────────────────────────────────────────────
 INSTALLED_APPS = [
@@ -79,24 +80,38 @@ USE_TZ = True
 # ─── STATIC ───────────────────────────────────────────
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # ─── MEDIA / UPLOAD ───────────────────────────────────
-GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME')
+GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', '')
 
 if GS_BUCKET_NAME:
-    # GOOGLE CLOUD STORAGE
-    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-
+    # GOOGLE CLOUD STORAGE (Django 4.2+ usa STORAGES dict)
     GS_DEFAULT_ACL = None
     GS_QUERYSTRING_AUTH = False
     GS_FILE_OVERWRITE = False
-
     MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
-
+    STORAGES = {
+        'default': {
+            'BACKEND': 'storages.backends.gcloud.GoogleCloudStorage',
+            'OPTIONS': {'bucket_name': GS_BUCKET_NAME},
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
 else:
-    # LOCAL (fallback)
+    # LOCAL (desenvolvimento)
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
 
 # ─── PADRÃO ───────────────────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
